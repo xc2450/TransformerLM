@@ -20,7 +20,6 @@ LLM from scratch/
 ├── train.py           # Training utilities and main loop
 ├── BPE_tokenizer.py   # Tokenization implementation
 ├── decode.py          # Text generation strategies
-└── __init__.py        # Module exports
 ```
 
 ---
