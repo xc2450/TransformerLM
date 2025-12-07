@@ -6,7 +6,7 @@ This project includes
   
 # Architecture 
 
-<img width="1800" height="1124" alt="image5" src="https://github.com/user-attachments/assets/8232054f-5a2f-4b94-9ec4-187d3151eb1f" />
+<img width="1799" height="1043" alt="523407115-8232054f-5a2f-4b94-9ec4-187d3151eb1f" src="https://github.com/user-attachments/assets/7bda3b42-9dcd-4b29-9b73-69da6e195508" />
 
 ## Hyperparameters
 | params | len_vocab | rope_theta | n_layers | d_model | kv_heads | q_heads |
