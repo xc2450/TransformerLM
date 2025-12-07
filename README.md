@@ -1,7 +1,8 @@
 # TransformerLM
 
+This project includes
 * Implementation of a micro causal language model with modern architectural optimization, including RoPE with YaRN scaling, GQA, RMSNorm, and Pre-norm attention block.
-* Documentation of ablation studies on hyperparameters and architecture.
+* Ablation studies on hyperparameters and architecture.
   
 # Architecture 
 
