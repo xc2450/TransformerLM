@@ -154,7 +154,6 @@ class Attention(torch.nn.Module):
         xq = xq.view(bsz, seq_len, self.n_local_heads, self.head_dim)
         xk = xk.view(bsz, seq_len, self.num_key_value_heads, self.head_dim)
         xv = xv.view(bsz, seq_len, self.num_key_value_heads, self.head_dim)
-        # apply rotary position embedding
         cos, sin = position_embeddings
         xq, xk = apply_rotary_pos_emb(xq, xk, cos, sin)
 
