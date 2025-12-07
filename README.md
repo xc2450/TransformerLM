@@ -1,4 +1,4 @@
-This repository contains a micro causal language model with modern architectural optimization, including RoPE with YaRN scaling, GQA, RMSNorm, and Pre-norm attention block. 
+This repository contains a micro causal language model with modern architectural optimization, including RoPE with YaRN scaling, GQA, RMSNorm, and Pre-norm attention block.
 
 # Architecture 
 
