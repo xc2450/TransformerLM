@@ -1,7 +1,7 @@
 # TransformerLM
 
 This project includes
-* Implementation of a micro causal language model with modern architectural optimization, including RoPE with YaRN scaling, GQA, RMSNorm, KV Cache and pre-norm attention block.
+* Implementation of a micro causal language model with modern architectural optimization, including RoPE with YaRN scaling, GQA, RMSNorm, KV Cache, and pre-norm attention block.
 * Pretraining ablation studies on hyperparameters and architecture.
   
 # Architecture 
@@ -27,7 +27,7 @@ This project includes
 ## RMSNorm
 <img width="1999" height="1051" alt="image7" src="https://github.com/user-attachments/assets/0c713971-404d-437b-aecb-243f76cb99fe" />
 
-* RMSNorm stabilizes the training process, enabling the model to converge to a lower loss.
+* RMSNorm stabilizes the training process, and the model converges to a lower loss.
 
 ## Pre-Norm vs. Post-Norm
 <img width="1999" height="1051" alt="image4" src="https://github.com/user-attachments/assets/a85c8c24-5969-4b3c-92b0-3133a18029d8" />
