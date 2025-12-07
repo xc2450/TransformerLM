@@ -21,13 +21,13 @@
 ## RMSNorm
 <img width="1999" height="1051" alt="image7" src="https://github.com/user-attachments/assets/0c713971-404d-437b-aecb-243f76cb99fe" />
 
-* RMSNorm stabilizes the training process, enabling the model to converge to a better, more optimized solution.
+* RMSNorm stabilizes the training process, enabling the model to converge to a lower loss.
 
 ## Pre-Norm vs. Post-Norm
 <img width="1999" height="1051" alt="image4" src="https://github.com/user-attachments/assets/a85c8c24-5969-4b3c-92b0-3133a18029d8" />
 
 * For Post-Norm, the learning rate needs to be decreased 5 times to achieve stable training.
-* The Pre-Norm setup simplifies the gradient flow, making training more stable and allowing for a more efficient learning rate.
+* The Pre-Norm setup simplifies the gradient flow, making training more stable and allowing for a higher learning rate.
 
 ## NoPE vs. RoPE
 <img width="1999" height="1051" alt="image1" src="https://github.com/user-attachments/assets/bf232c81-f040-4636-8969-65f2f103ad6b" />
