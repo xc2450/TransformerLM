@@ -2,7 +2,7 @@
 
 This project includes
 * Implementation of a micro causal language model with modern architectural optimization, including RoPE with YaRN scaling, GQA, RMSNorm, KV Cache and pre-norm attention block.
-* Ablation studies on hyperparameters and architecture during pretraining phase.
+* Pretraining ablation studies on hyperparameters and architecture.
   
 # Architecture 
 
