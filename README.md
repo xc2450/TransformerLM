@@ -8,7 +8,7 @@ This project includes
 
 <img width="1799" height="1043" alt="523407115-8232054f-5a2f-4b94-9ec4-187d3151eb1f" src="https://github.com/user-attachments/assets/7bda3b42-9dcd-4b29-9b73-69da6e195508" />
 
-## Hyperparameters
+## Config
 | params | len_vocab | rope_theta | n_layers | d_model | kv_heads | q_heads |
 |--------|-----------|------------|----------|---------|----------|---------|
 | 26M    | 6400      | 1e6        | 8        | 512     | 2        | 8       |
