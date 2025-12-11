@@ -50,6 +50,7 @@ This project includes
 <img width="1999" height="1051" alt="image8" src="https://github.com/user-attachments/assets/c73f0a28-3536-41aa-8c13-2d7016dd7f12" />
 
 * GQA can provide up to an 8x reduction in memory for the KV cache with no degradation in perplexity.
+* During pretraining, many attention heads might converge to learn similar syntactic, positional, or coarse semantic patterns. A single KV might be sufficient to capture all the information.
 
 ## Post-training
 ### SFT 
