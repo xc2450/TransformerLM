@@ -50,3 +50,9 @@ This project includes
 <img width="1999" height="1051" alt="image8" src="https://github.com/user-attachments/assets/c73f0a28-3536-41aa-8c13-2d7016dd7f12" />
 
 * GQA can provide up to an 8x reduction in memory for the KV cache with no degradation in perplexity.
+
+## SFT 
+<img width="5056" height="2656" alt="W B Chart 12_10_2025, 11_57_39 PM" src="https://github.com/user-attachments/assets/b5095a15-8af6-479b-8ecf-1dfdf4a12dc5" />
+
+* Batch size is set to 32 to promote better generalization.
+* Learning rate is set to 5e-4. Values (5e-5, 5e-6) magnitudes smaller than it cause optimization to stall with the loss stuck in a plateau. Values higher than this might risk catastrophic forgetting.
