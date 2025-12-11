@@ -13,8 +13,8 @@ from contextlib import nullcontext
 from torch import optim, nn
 from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, DistributedSampler
-from model.model_minimind import MiniMindConfig
-from dataset.lm_dataset import PretrainDataset
+from model.model import MiniMindConfig
+from dataset.lm_dataset import SFTDataset
 from trainer.trainer_utils import get_lr, Logger, is_main_process, lm_checkpoint, init_distributed_mode, setup_seed, init_model, SkipBatchSampler
 
 warnings.filterwarnings('ignore')
@@ -33,8 +33,6 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
 
         with autocast_ctx:
             res = model(X)
-            # [batch_size, seq_length, vocab_size]
-            # -> [batch_size * seq_length, vocab_size]
             loss = loss_fct(
                 res.logits.view(-1, res.logits.size(-1)),
                 Y.view(-1)
@@ -64,7 +62,7 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
             
             Logger(f'Epoch:[{epoch+1}/{args.epochs}]({step}/{iters}) loss:{current_loss:.6f} lr:{current_lr:.12f} epoch_Time:{eta_min}min:')
             
-            if wandb: wandb.log({"loss": current_loss, "lr": current_lr, "epoch_Time": eta_min})
+            if wandb: wandb.log({"loss": current_loss, "lr": current_lr, "epoch_time": eta_min})
 
         if (step % args.save_interval == 0 or step == iters - 1) and is_main_process():
             model.eval()
@@ -76,7 +74,8 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
                 state_dict = model.state_dict()
             state_dict = {k: v.half().cpu() for k, v in state_dict.items()}
             torch.save(state_dict, ckp)
-            lm_checkpoint(lm_config, weight=args.save_weight, model=model, optimizer=optimizer, scaler=scaler, epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints')
+            lm_checkpoint(lm_config, weight=args.save_weight, model=model, optimizer=optimizer, 
+                         epoch=epoch, step=step, wandb=wandb, save_dir='../checkpoints', scaler=scaler)
             model.train()
             del state_dict
 
@@ -84,16 +83,16 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="MiniMind Pretraining")
+    parser = argparse.ArgumentParser(description="MiniMind Full SFT")
     parser.add_argument("--save_dir", type=str, default="../out", help="Model save directory")
-    parser.add_argument('--save_weight', default='pretrain', type=str, help="Prefix name for saved weights")
-    parser.add_argument("--epochs", type=int, default=1, help="Number of training epochs (recommend 1 epoch for zero or 2-6 epochs for full training)")
-    parser.add_argument("--batch_size", type=int, default=32, help="batch size")
-    parser.add_argument("--learning_rate", type=float, default=5e-4, help="Initial learning rate")
+    parser.add_argument('--save_weight', default='full_sft', type=str, help="Prefix name for saved weights")
+    parser.add_argument("--epochs", type=int, default=2, help="Number of training epochs")
+    parser.add_argument("--batch_size", type=int, default=16, help="batch size")
+    parser.add_argument("--learning_rate", type=float, default=5e-7, help="Initial learning rate")
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu", help="Training device")
     parser.add_argument("--dtype", type=str, default="bfloat16", help="Mixed precision type")
     parser.add_argument("--num_workers", type=int, default=1, help="Number of data loading threads")
-    parser.add_argument("--accumulation_steps", type=int, default=8, help="Gradient accumulation steps")
+    parser.add_argument("--accumulation_steps", type=int, default=1, help="Gradient accumulation steps")
     parser.add_argument("--grad_clip", type=float, default=1.0, help="Gradient clipping threshold")
     parser.add_argument("--log_interval", type=int, default=100, help="Log printing interval")
     parser.add_argument("--save_interval", type=int, default=100, help="Model save interval")
@@ -101,11 +100,11 @@ if __name__ == "__main__":
     parser.add_argument('--num_hidden_layers', default=8, type=int, help="Number of hidden layers")
     parser.add_argument('--max_seq_len', default=512, type=int, help="Maximum truncation length for training")
     parser.add_argument('--use_moe', default=0, type=int, choices=[0, 1], help="Whether to use MoE architecture (0=no, 1=yes)")
-    parser.add_argument("--data_path", type=str, default="../dataset/pretrain_hq.jsonl", help="Pretraining data path")
-    parser.add_argument('--from_weight', default='none', type=str, help="Which weight to train from, use 'none' to start from scratch")
+    parser.add_argument("--data_path", type=str, default="../dataset/sft_mini_512.jsonl", help="Training data path")
+    parser.add_argument('--from_weight', default='pretrain', type=str, help="Which weight to train from, use 'none' to start from scratch")
     parser.add_argument('--from_resume', default=0, type=int, choices=[0, 1], help="Whether to automatically detect & resume training (0=no, 1=yes)")
     parser.add_argument("--use_wandb", action="store_true", help="Whether to use wandb")
-    parser.add_argument("--wandb_project", type=str, default="MiniMind-Pretrain", help="wandb project name")
+    parser.add_argument("--wandb_project", type=str, default="MiniMind-Full-SFT", help="wandb project name")
     args = parser.parse_args()
 
     # ========== 1. Initialize environment and random seed ==========
@@ -129,12 +128,12 @@ if __name__ == "__main__":
         import wandb
         wandb_id = ckp_data.get('wandb_id') if ckp_data else None
         resume = 'must' if wandb_id else None
-        wandb_run_name = f"MiniMind-Pretrain-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
+        wandb_run_name = f"MiniMind-Full-SFT-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
         wandb.init(project=args.wandb_project, name=wandb_run_name, id=wandb_id, resume=resume)
     
     # ========== 5. Define model, data, optimizer ==========
     model, tokenizer = init_model(lm_config, args.from_weight, device=args.device)
-    train_ds = PretrainDataset(args.data_path, tokenizer, max_length=args.max_seq_len)
+    train_ds = SFTDataset(args.data_path, tokenizer, max_length=args.max_seq_len)
     train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
     scaler = torch.cuda.amp.GradScaler(enabled=(args.dtype == 'float16'))
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
